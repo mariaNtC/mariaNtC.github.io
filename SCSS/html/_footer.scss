@@ -1,0 +1,32 @@
+@import "../abstracts/variables";
+
+/* ------------------------------- ESTILOS DEL FOOTER ------------------------------- */  
+footer {
+    background-color: $colorPrincipal; /* Color de fondo */
+    color: $colorH; /* Color del texto */
+    text-align: center; 
+    .contenedorFooterData{
+        /* Para corregir espacio en blanco del lado derecho */
+        margin-right: 0px;
+        .footerText {
+            .footerTextP {
+                /* Estilos para el texto de copyright */
+                margin: 20px;
+                font-family: "Barlow Condensed", sans-serif; 
+            }
+        }        
+        .imgFooter {
+            .socialLink {
+                .logoSocialFooter {
+                     /* Estilos para LOGOS de redes del footer */
+                    @include hyw(30px,30px);
+                    margin-bottom: 20px;  
+                }
+            }            
+            .socialLink:hover{
+                opacity: 0.6; /* Cambia la opacidad al hacer hover sobre LOGOS de redes*/
+                transition: opacity 0.5s ease; 
+            }
+        }        
+    }   
+}
