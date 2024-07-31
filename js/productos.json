@@ -1,0 +1,59 @@
+[
+   
+    {
+        "id": "0",
+        "nombre": "MEMBRESÍA DE 1 MES",
+        "precio": 25000,
+        "categoria": "membresia",
+        "imagen": "../images/indexImg/shop/1mes.png",
+        "duracion": "1 MES"
+    },
+    {
+        "id": "1",
+        "nombre": "MEMBRESÍA DE 6 MESES",
+        "precio": 144000,
+        "categoria": "membresia",
+        "imagen": "../images/indexImg/shop/6meses.png",
+        "duracion": "6 MESES"
+    },
+    {
+        "id": "2",
+        "nombre": "MEMBRESÍA DE 12 MESES",
+        "precio": 264000,
+        "categoria": "membresia",
+        "imagen": "../images/indexImg/shop/12meses.png",
+        "duracion": "12 MESES"
+    },
+    {
+        "id": "3",
+        "nombre": "Remera Naranja CRT- Tribal Heart",
+        "precio": 1522000,
+        "categoria": "indumentaria",
+        "imagen": "../images/indexImg/shop/shop3.jpg",
+        "talle": ""
+    },
+    {
+        "id": "4",
+        "nombre": "Campera Naranja CRT- Tribal Heart",
+        "precio": 40000,
+        "categoria": "indumentaria",
+        "imagen": "../images/indexImg/shop/shop2.jpg",
+        "talle": ""
+    },
+    {
+        "id": "5",
+        "nombre": "Remera Negra CRT- Tribal Heart",
+        "precio": 15000,
+        "categoria": "indumentaria",
+        "imagen": "../images/indexImg/shop/shop1.jpg",
+        "talle": ""
+    },
+    {
+        "id": "6",
+        "nombre": "Botella CRT",
+        "precio": 4000,
+        "categoria": "articulos",
+        "imagen": "../images/indexImg/shop/articuloBotellaTienda.png",
+        "descripcion": "Botella de plástico endurecido de 500cc."
+    }
+]

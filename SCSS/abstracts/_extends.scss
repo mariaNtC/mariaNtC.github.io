@@ -2,7 +2,7 @@
 %button {
     background-color: $colorPrincipal;
     border: $colorPrincipal;    
-    border-radius: 0px; /* Corrige el radius del framework */
+    border-radius: 5px; /* Corrige el radius del framework */
     border-top-right-radius: 15px; /* Asigno bordes solo a 2 vértices */
     border-bottom-left-radius: 15px;
 }

@@ -13,6 +13,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">   
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <!-- Toastify JS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <!-- Link de animaciones 'Animate.css' -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,6 +24,9 @@
 
 <body class="bg-body-custom">
 
+        <!-- Spinner de carga de página --> 
+        <div id="spinner" class="spinner"></div>
+       
     <header>
         <!-- Navegador con logo -->    
         <nav class="navbar navbar-expand-lg fixed-top">
@@ -61,7 +66,9 @@
           </nav>
     
     </header>
-    
+
+<div id="contenido">
+      <!-- Aside left para indice de búsqueda --> 
     <aside class="aside">
         <div class="asideBox">
             
@@ -81,9 +88,11 @@
                     <img src="../images/iconBotellaAside.png" class="img-fluid iconImgAsideBox" alt="Varios">
                 </a>
             </div>
-           
         </div>
     </aside>    
+     <!-- FIN ASIDE --> 
+
+
 
     <main class="mainTienda">   
           <!-- Sección sueperior con datos del carrito --> 
@@ -104,9 +113,9 @@
 
                     <div class="carritoMembresiaCompradosContainer">
                         <p class="descCarritoMembresiaComprados animate__animated animate__fadeIn">Membresía:</p>
-                        <p id="membresiaFinalDOM" class="carritoMembresiaComprados animate__animated animate__fadeIn">No se ha seleccionado ninguna.</p>
+                        <p id="membresiaFinalDOM" class="carritoMembresiaComprados animate__animated animate__fadeIn"></p>
                     </div>
-                </div>
+                </div>     
 
                 <div class="carritoTotalContainer">
                     <div class="carritoTotalCompradosContainer">                
@@ -114,7 +123,6 @@
                         <p id="costoFinalDOM" class="carritoTotalComprados animate__animated animate__fadeIn">0</p>
                     </div>
                     
-
                     <div class="botonesAbonarVaciarContainer">
                         <div class="abonarCarritoContainer">
                             <button id="abrirCarritoTOP" class="abrirCarritoBtn">
@@ -132,112 +140,18 @@
                     </div>
 
                 </div>
-
-                <div class="userTiendaContainer">
-
-                    <img src="../images/userTienda.png" class="img-fluid tiendaImg imgAvatarTienda" alt="Varios">
-                    <a class="loginBoton" href=" ">Ingresar</a>
-                    <a class="registrarBoton" href=" ">Registrarse</a>
-    
-                </div>
                 
-            </div>
-
-
-           
-            
-        </h2>
-
-       <!------------------------------------ POP OVERS -------------------------------------->
-
-
-       <div id="popoverEliminarProducto" class="popoverEliminarProducto animate__animated animate__fadeIn">
-        <div class="popover-inner">
-            <div class="popover-body">
-                Producto eliminado del carrito.
-            </div>
-        </div>
-    </div>
-
-    <div id="popoverAñadirProducto" class="popoverAñadirProducto animate__animated animate__fadeIn">
-        <div class="popover-inner">
-            <div class="popover-body">
-                Producto añadido al carrito.
-            </div>
-        </div>
-    </div>
-
-
-       <!-- Popover para confirmación de pagar carrito -->
-       <div id="popoverPagarCarrito" class="popoverPagarCarrito animate__animated animate__fadeIn">
-        <div class="popover-inner">
-            <div class="popover-body">
-                ¿Deseas comprar los productos el carrito?
-                <div class="mt-2">
-                    <button id="confirmarPagoCarritoBtn" class="btn-primary btn botonConfirmarPago">Confirmar</button>
-                    <button id="cancelarPagoCarritoBtn" class="btn-secondary btn botonCancelarPago">Cancelar</button>
-                </div>
-            </div>
-        </div>  
-    </div>
-    
-
-    <!-- Popover para mostrar que el carrito se compro -->
-    <div id="popoverCarritoComprado" class="popoverCarritoComprado popoverPagarCarrito animate__animated animate__fadeInUp">
-        <div class="popover-inner">
-            <div class="popover-body">
-                Gracias por tu compra!
-            </div>
-        </div>
-    </div>
-
-
-
-
-    <!-- Popover para confirmación de vaciar carrito -->
-    <div id="popoverVaciarCarrito" class="popoverVaciarCarrito animate__animated animate__fadeIn">
-        <div class="popover-inner">
-            <div class="popover-body">
-                ¿Estás seguro de que deseas vaciar el carrito?
-                <div class="mt-2">
-                    <button id="confirmarVaciarCarritoBtn" class="btn-primary btn botonConfirmarVaciado">Confirmar</button>
-                    <button id="cancelarVaciarCarritoBtn" class="btn-secondary btn botonCancelarVaciado">Cancelar</button>
-                </div>
-            </div>
-        </div>  
-    </div>
-    
-
-    <!-- Popover para mostrar que el carrito se vació -->
-    <div id="popoverCarritoVaciado" class="popoverCarritoVaciado popoverVaciarCarrito animate__animated animate__fadeInUp">
-        <div class="popover-inner">
-            <div class="popover-body">
-                El carrito se ha vaciado correctamente.
-            </div>
-        </div>
-    </div>
-
-      <!-- Popover para mostrar que el carrito se vació -->
-      <div id="popoverCarritoVacio" class="popoverCarritoVacio popoverVaciarCarrito animate__animated animate__fadeInUp">
-        <div class="popover-inner">
-            <div class="popover-body">
-                No tienes productos en el carrito.
-            </div>
-        </div>
-    </div>
-    <!------------------------------------ FIN POP OVERS -------------------------------------->
-
-
-        <h1 class="h1Tienda animate__animated animate__fadeInUp">TIENDA</h1>  
-
+            </div>                     
+        </h2>      
+        <h1 class="h1Tienda animate__animated animate__fadeInUp">TIENDA</h1> 
+         
            
     <!------------------------------------ SECCIÓN MEMBRESÍAS -------------------------------------->      
 
         <h2 id="membresias" class="h2Membresias">
             <img  class="animate__animated animate__tada" src="../images/iconIdAside.png" alt="Membresías"> 
             <p class="tiendaIconH2 animate__animated animate__fadeIn">MEMBRESÍAS</p>
-        </h2>   
-        
+        </h2>           
     
         <div id="productosMembresias">
             <!-- Aquí se renderizarán dinámicamente los productos de membresía DEL js-->
@@ -245,21 +159,17 @@
 
     <!------------------------------------ FINAL SECCIÓN MEMBRESÍAS -------------------------------------->   
      
-    
-    <!------------------------------------ SECCIÓN INDUMENTARIA -------------------------------------->   
+        <!------------------------------------ SECCIÓN INDUMENTARIA -------------------------------------->   
 
         <h2 id="indumentaria" class="h2Indumentaria"><img  class="animate__animated animate__tada" src="../images/iconRemeraAside.png" alt="Membresías"> 
             <p class="tiendaIconH2 animate__animated animate__fadeIn">INDUMENTARIA</p>
-        </h2> 
-         
+        </h2>          
 
         <div id="productosIndumentaria">
             <!-- Aquí se renderizarán dinámicamente los productos de membresía -->
         </div>      
-         
-        
+                 
        <!------------------------------------ FINAL SECCIÓN INDUMENTARIA -------------------------------------->   
-
 
         <!------------------------------------ SECCIÓN ARTÍCULOS -------------------------------------->   
 
@@ -274,15 +184,11 @@
 
         <!------------------------------------ FINAL SECCIÓN ARTICULOS -------------------------------------->   
 
-
-
-
-         <!------------------------------------ ICONO FLOTANTE PARA ABRIR EL CARRO -------------------------------------->   
+        <!------------------------------------ ICONO FLOTANTE PARA ABRIR EL CARRO -------------------------------------->   
         <div class="iconoCarrito animate__animated animate__fadeInUp" id="iconoCarrito">
             <img src="../images/abonarTienda.png" alt="Carrito">
         </div>
          <!------------------------------------ FINAL ICONO FLOTANTE PARA ABRIR EL CARRO -------------------------------------->   
-
 
         <!-------------------------------------- MODAL DEL CARRO --------------------------------->
         <div class="modalCarrito animate__animated animate__fadeIn" id="modalCarrito">
@@ -295,34 +201,116 @@
                 <div class="modalContenidoTextos">               
                     
                         <div id="carrito">
-                            <!-- Aquí se generará el contenido del carrito por JS -->     
-                                               
-                        </div>
-                    
-                </div>
-    
+                            <!-- Aquí se generará el contenido del carrito por JS -->   
+                        </div>                    
+
+                </div>    
                 <hr>
                 <p class="carritoModalPrecioFinal">PRECIO FINAL</p> 
-                    <p id="costoFinalModal" class="carritoModalPrecioTotal"></p>     
-    
+                    <p id="costoFinalModal" class="carritoModalPrecioTotal"></p>   
     
                     <div class="contenedorBotonesModal">
-                        <button class="pagarBoton" id="pagarCarrito">PAGAR</button>            
-                        <button class="vaciarCarritoBtn" id="vaciarCarrito">VACIAR</button>
+                        <button class="confirmarBoton" id="confirmarCarrito">CONFIRMAR</button>            
+                        <button class="vaciarCarritoBtn" id="vaciarCarrito"><img class="vaciarCarritoImgBtn" src="../images/tachoTienda.png" class="img-fluid tachoTienda" alt="Quitar"></button>
                     </div>
                     
-                <button class="botonCerrarModal" id="botonCerrarModal">CERRAR</button>
-    
-                
+                <button class="botonCerrarModal" id="botonCerrarModal">CERRAR</button>   
                
              </div>
         </div>
+
+    <!--__________________________ MODAL DE PAGO DEL CARRO ________________________________-->   
+
+        <div class="modalPagoCarrito animate__animated animate__fadeIn" id="modalPagoCarrito">
+            
+            <div class="modalPagoContenido">
+                <h2 class="h2Modal">
+                    <img  class="animate__animated animate__tada" src="../images/facturacionPago.png" alt="Facturación"> 
+                    <p class="tiendaIconH2 animate__animated animate__fadeIn">DATOS DE FACTURACIÓN</p>
+                </h2>  
+                <div class="modalContenidoTextos">               
+                    
+                    <div class="formularioDePago">
+                        <form id="pagoForm">
+                            <div class="contenedorNomDir">
+                                <div class="contenedorNombreModalPago">
+                                    <label for="nombre">Nombre:</label><br>
+                                    <input class="form-control inputModalPago" type="text" id="nombre" name="nombre" placeholder="Ingresa tu nombre completo" required><br>
+                                    </div>
+                                <div class="contenedorDireccionModalPago">
+                                    <label for="descripcion">Dirección:</label><br>
+                                    <input class="form-control inputModalPago" id="direccion" name="direccion" placeholder="Ingresa tu dirección de entrega" required><br>
+                                </div>
+                            </div>
+
+                            <div class="contenedorTelMail">
+                                <div class="contenedorTelefonoModalPago">
+                                    <label for="telefono">Teléfono:</label><br>
+                                    <input class="form-control inputModalPago" type="number" id="telefono" name="telefono" pattern="\d*" inputmode="numeric" placeholder="Ingresa tu nro. telefónico" required><br>
+                                </div>
+                                <div class="contenedorEmailModalPago">
+                                    <label for="email">E-Mail:</label><br>
+                                    <input class="form-control inputModalPago" type="email" id="email" name="email" placeholder="Ingresa tu dirección de E-Mail" required><br><br>
+                                </div>
+
+                            </div>
+                            <div class="contenedorOpcionesPago">
+                                <div class="opcionesPago">
+                                    <div class="contenedorRadioEfectivoModalPago">
+                                    <label class="radioEfectivoImg">
+                                        <input type="radio" name="pago" value="efectivo" checked>
+                                        <img src="../images/efectivoPago.png" alt="Efectivo" class="imgEfectivoRadio">
+                                        EFECTIVO                                        
+                                    </label>
+                                    </div>
+                                    <div class="contenedorRadioTransferenciaoModalPago">
+                                        <label class="radioTransferenciaImg">
+                                            <input type="radio" name="pago" value="transferencia">
+                                            <img src="../images/transferenciaPago.png" alt="Efectivo" class="imgTransferenciaRadio">
+                                        </label>
+                                        TRANSFERENCIA
+                                        <div id="campoCBU" style="visibility:hidden;">
+                                            <p>Alias: CR.Team.Run</p>                                                                  
+                                        </div>
+                                    </div>
+                                    <div class="contenedorRadioTarjetaModalPago">
+                                        <label class="radioTarjetaImg">
+                                            <input type="radio" name="pago" value="tarjeta">
+                                            <img src="../images/tarjetaPago.png" alt="Efectivo" class="imgTarjetaRadio">
+
+                                        </label>
+                                        TARJETA
+                                        <div id="campoCuotas" style="visibility:hidden;">
+                                            <label for="cuotas">Cuotas:</label>
+                                            <select id="cuotas" name="cuotas">
+                                                <option value="1">1 cuota</option>
+                                                <option value="3">3 cuotas</option>
+                                                <option value="6">6 cuotas</option>
+                                            </select><br>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="contenedorBotonesModal">
+                                <button type="submit" class="pagarBoton" id="pagarCarrito">PAGAR</button>    
+                            </div>                           
+                        </form>                       
+                    </div>                
+                </div>                
+    
+                <hr>
+                    <p class="carritoModalPrecioFinal">PRECIO FINAL</p> 
+                    <p id="costoFinalModalPago" class="carritoModalPrecioTotal"></p>    
+                        
+                    <button class="botonCerrarModal" id="botonCerrarPagoModal">CERRAR</button>                    
+             </div>
+        </div>
+        <!--__________________________ FINAL MODAL DE PAGO DEL CARRO ________________________________-->   
 
     <!------------------------------------ FINAL MODAL DEL CARRO -------------------------------------->   
 
     </main>
     
-
 <!-- Footer -->  
    <!-- Footer con logos de acceso a redes -->
    <footer class="containerFooter">
@@ -351,12 +339,20 @@
     </div>
   
   </footer>
-  <!-- Script de Tienda -->
-   <script src="../js/script.js"></script>
+
+  <!-- Script Toastify JS -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
   <!-- Script de Bootstrap -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
+  <!-- Script de SweetAlert -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- Script de Tienda -->
+   <script src="../js/script.js"></script>
+</div>
+  
   </body>
   
-  </html>
+</html>

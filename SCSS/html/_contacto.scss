@@ -131,9 +131,8 @@
                             .buttonContactoS, .buttonContactoR {      
                                 display: inline;                          
                                 background-color: $colorPrincipal;
-                                border: $colorPrincipal; 
-                               
-                                @include borderCreator(0,15px,0,15px);  /*Mixin de estilos de vértices radiales*/                                                            
+                                border: $colorPrincipal;                                
+                                @include borderCreator(5px,15px,5px,15px);  /*Mixin de estilos de vértices radiales*/                                                            
                             }
                             .buttonContactoS:hover, .buttonContactoR:hover {
                                 opacity: 0.6;

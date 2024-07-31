@@ -1,3 +1,4 @@
+
 // Clase para estructurar los valores de los productos de membresía
 class ProductoMembresia {
     constructor(id, nombre, precio, imagen, categoria, duracion) {
@@ -28,7 +29,7 @@ class ProductoMembresia {
                     <p>$${this.precio}</p>
                 </div>
                 <div class="contenedorBotonesTienda">
-                    <button class="botonComprar text-center justify-content-center" data-id="${this.id}" data-nombre="${this.nombre}" data-precio="${this.precio}" data-categoria="${this.categoria}">
+                    <button class="botonComprar text-center justify-content-center" data-id="${this.id}" data-nombre="${this.nombre}" data-precio="${this.precio}" data-imagen="${this.imagen}" data-categoria="${this.categoria}">
                         UNITE
                     </button>
                     <div class="botonBorrarItem text-center">
@@ -92,7 +93,7 @@ class ProductoIndumentaria {
                     </div>   
             
                 <div class="contenedorBotonesTienda">
-                    <button class="botonComprar text-center justify-content-center" data-id="${this.id}" data-nombre="${this.nombre}" data-precio="${this.precio}" data-categoria="${this.categoria}" data-talle="${this.talle}">
+                    <button class="botonComprar text-center justify-content-center" data-id="${this.id}" data-nombre="${this.nombre}" data-precio="${this.precio}" data-imagen="${this.imagen}" data-categoria="${this.categoria}" data-talle="${this.talle}">
                         COMPRAR
                     </button> 
                    
@@ -135,13 +136,13 @@ class ProductoArticulos {
                     </div>
                     
                     <div class="articuloItemImgPrecio text-center">
-                        <p>${this.precio}</p>
+                        <p>$${this.precio}</p>
                     </div>
 
                  </div>   
 
                 <div class="contenedorBotonesTienda">
-                    <button class="botonComprar text-center justify-content-center" data-id="${this.id}" data-nombre="${this.nombre}" data-precio="${this.precio}" data-categoria="${this.categoria}" data-descripcion="${this.descripcion}">
+                    <button class="botonComprar text-center justify-content-center" data-id="${this.id}" data-nombre="${this.nombre}" data-precio="${this.precio}" data-imagen="${this.imagen}" data-categoria="${this.categoria}" data-descripcion="${this.descripcion}">
                         COMPRAR
                     </button> 
                    
@@ -154,54 +155,166 @@ class ProductoArticulos {
 
     }
 }
-// Instancias de los productos de membresía
-const productoMembresia0 = new ProductoMembresia(0, "MEMBRESÍA DE 1 MES", 25000, "../images/indexImg/shop/logoW2tienda.png", "membresia", "1 MES");
-const productoMembresia1 = new ProductoMembresia(1, "MEMBRESÍA DE 6 MESES", 144000, "../images/indexImg/shop/logoW2tienda.png", "membresia", "6 MESES");
-const productoMembresia2 = new ProductoMembresia(2, "MEMBRESÍA DE 12 MESES", 264000, "../images/indexImg/shop/logoW2tienda.png", "membresia",  "12 MESES");
+
+//----------------------------------------- API PRODUCTOS JSON --------------------------------------
+
+const contenedorProductosMembresia = document.getElementById('productosMembresias');
+const contenedorProductosIndumentaria = document.getElementById('productosIndumentaria');
+const contenedorProductosArticulos = document.getElementById('productosArticulos');
+
+document.addEventListener('DOMContentLoaded', () => {
+
+     // Mostrar el spinner
+     const spinner = document.getElementById('spinner');
+     const contenido = document.getElementById('contenido');
+ 
+     spinner.style.display = 'block'; // Mostrar spinner
+ 
+     // Ocultar el spinner cuando la página esté completamente cargada
+     window.addEventListener('load', function() {
+
+        
+
+            spinner.style.display = 'none'; // Ocultar spinner
+            contenido.style.display = 'block'; // Mostrar contenido    
+        
+        
+        
+             
+     });
+
+    fetch('/js/productos.json')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error al cargar los datos');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Procesar los productos
+            data.forEach(producto => {
+                // Llama a la función adecuada para renderizar los productos
+                if (producto.categoria === 'membresia') {
+                      // Crear una instancia de ProductoMembresia
+                      const productoMembresia = new ProductoMembresia(
+                        producto.id,
+                        producto.nombre,
+                        producto.precio,
+                        producto.imagen,
+                        producto.categoria,
+                        producto.duracion
+                    );
+                    
+                    // Renderizar el producto y añadirlo al contenedor
+                    contenedorProductosMembresia.innerHTML += productoMembresia.renderizar();                                        
+                } else if (producto.categoria === 'indumentaria') {
+                     // Crear una instancia de ProductoIndumentaria
+                     const productoIndumentaria = new ProductoIndumentaria(
+                        producto.id,
+                        producto.nombre,
+                        producto.precio,
+                        producto.imagen,
+                        producto.categoria,
+                        producto.descripcion,
+                        producto.talle
+                    );
+                    // Renderizar el producto y añadirlo al contenedor
+                    contenedorProductosIndumentaria.innerHTML += productoIndumentaria.renderizarIndumentaria();
+
+                } else if (producto.categoria === 'articulos') {
+                    // Crear una instancia de ProductoArticulos
+                    const productoArticulos = new ProductoArticulos(
+                        producto.id,
+                        producto.nombre,
+                        producto.precio,
+                        producto.imagen,
+                        producto.categoria,
+                        producto.descripcion,
+                        producto.talle
+                    );
+                    // Renderizar el producto y añadirlo al contenedor
+                    contenedorProductosArticulos.innerHTML += productoArticulos.renderizarArticulos();
+                }                 
+                           });
+
+           //Llama a la función que asigna los eventos a los botones de COMPRAR y BORRAR                
+           agregarEventos() 
+           //Actualiza el valor de la membresía del carrito del DOM         
+           const nombreMembresiaGuardada = localStorage.getItem('nombreMembresia');
+           renderizarMembresiaDOM(nombreMembresiaGuardada);    
+           //Carga los productos del carrito almcaneados en LocalStorage    
+           inicializarCarritoDesdeLocalStorage();
+        })
+        .catch(error => {            
+            mostrarToastErrorCarga();
+        });        
+
+        //Para mostrar los mensajes al seleccionar los radios del método de pago del modal de pagos
+        const radiosPago = document.getElementsByName('pago');
+        const campoCBU = document.getElementById('campoCBU');
+        const campoCuotas = document.getElementById('campoCuotas');
+    
+        radiosPago.forEach(radio => {
+            radio.addEventListener('change', () => {
+                if (radio.value === 'transferencia') {
+                    campoCBU.style.visibility = 'visible';
+                    campoCuotas.style.visibility = 'hidden';
+                } else if (radio.value === 'tarjeta') {
+                    campoCBU.style.visibility = 'hidden';
+                    campoCuotas.style.visibility = 'visible';
+                } else {
+                    campoCBU.style.visibility = 'hidden';
+                    campoCuotas.style.visibility = 'hidden';
+                }
+            });
+        });    
+
+        //Eventos del botón de pagar o submit del formulario de pago
+        const pagoForm = document.getElementById('pagoForm');
+
+        pagoForm.addEventListener('submit', function(event) {
+            // Evita el envío del formulario por defecto
+            event.preventDefault();
+    
+            // Verifica si el formulario es válido
+            if (pagoForm.checkValidity()) {
+                // Ejecuta la función swalPagarCarrito() si es válido
+                swalPagarCarrito();                
+            } else {
+                
+            }
+        });
+});
+
+//Asigna los eventos a los botones de COMPRAR y BORRAR
+function agregarEventos() {
+    // Agregar evento a todos los botones de agregar al carrito
+    const botonesAgregar = document.querySelectorAll('.botonComprar');
+    botonesAgregar.forEach(boton => {
+        boton.addEventListener('click', eventoAgregarAlCarrito);
+    });
+
+    // Agregar evento a todos los botones de quitar del carrito
+    const botonesQuitar = document.querySelectorAll('.botonQuitarId');
+    botonesQuitar.forEach(boton => {
+        boton.addEventListener('click', eliminarProductoDelCarrito);
+    });
+}
+
+//----------------------------------------- FIN API PRODUCTOS JSON --------------------------------------
 
 // Array de los productos de membresía
-const productosMembresias = [productoMembresia0, productoMembresia1, productoMembresia2];
+const productosMembresias = [];
 
-// Instancias de los productos de indumentaria
-const productoIndumentaria0 = new ProductoIndumentaria(3, "Remera Naranja CRT- Tribal Heart", 15000, "../images/indexImg/shop/shop3.jpg", "indumentaria", "");
-const productoIndumentaria1 = new ProductoIndumentaria(4, "Campera Naranja CRT- Tribal Heart", 40000, "../images/indexImg/shop/shop2.jpg", "indumentaria", "");
-const productoIndumentaria2 = new ProductoIndumentaria(5, "Remera Negra CRT- Tribal Heart", 15000, "../images/indexImg/shop/shop1.jpg", "indumentaria", "");
-// Array de los productos de indumentaria
-const productosIndumentaria = [productoIndumentaria0, productoIndumentaria1, productoIndumentaria2];
+// // Array de los productos de indumentaria
+const productosIndumentaria = [];
 
-// Instancias de los productos de articulos
-const productoArticulos0 = new ProductoArticulos(6, "Botella CRT", 4000, "../images/indexImg/shop/articuloBotellaTienda.png", "articulos", "Botella de plástico endurecido de 500cc.");
 // Array de los productos de artículos
-const productosArticulos = [productoArticulos0];
+const productosArticulos = [];
 
 // Array vacío para almacenar el carrito
 let carrito = [];
 let duracionMembresia = "";
-
-// Función para renderizar los productos de membresías
-function renderizarProductosMembresias() {
-    const contenedorProductosMembresia = document.getElementById('productosMembresias');
-    productosMembresias.forEach(productoMembresia => {
-        const productoMembresiaHTML = productoMembresia.renderizar();
-        contenedorProductosMembresia.innerHTML += productoMembresiaHTML;
-    });
-}
-// Función para renderizar los productos de indumentaria
-function renderizarProductosIndumentaria() {
-    const contenedorProductosIndumentaria = document.getElementById('productosIndumentaria');
-    productosIndumentaria.forEach(productoIndumentaria => {
-        const productoIndumentariaHTML = productoIndumentaria.renderizarIndumentaria();
-        contenedorProductosIndumentaria.innerHTML += productoIndumentariaHTML;
-    });
-}
-// Función para renderizar los productos de articulos
-function renderizarProductosArticulos() {
-    const contenedorProductosArticulos = document.getElementById('productosArticulos');
-    productosArticulos.forEach(productoArticulos => {
-        const productoArticulosHTML = productoArticulos.renderizarArticulos();
-        contenedorProductosArticulos.innerHTML += productoArticulosHTML;
-    });
-}
 
 // Función para renderizar el costo total del carrito
 function renderizarPrecioTotalDOM(productosTotales) {    
@@ -213,10 +326,10 @@ function renderizarPrecioTotalModal(productosTotales) {
     const contenedorPrecioTotalModal = document.getElementById(`costoFinalModal`);
     contenedorPrecioTotalModal.innerHTML = `<p>$${productosTotales}</p>`;
 }
-// Función para renderizar la cantidad de productos
-function renderizarProductosDOM(length) {    
-    const contenedorPrecioTotalDOM = document.getElementById(`productosFinalDOM`);
-    contenedorPrecioTotalDOM.innerHTML = `<p>${length}</p>`;       
+// Función para renderizar el costo total del carrito en el modal del pago
+function renderizarPrecioTotalModalPago(productosTotales) {    
+    const contenedorPrecioTotalModalPago = document.getElementById(`costoFinalModalPago`);
+    contenedorPrecioTotalModalPago.innerHTML = `<p>$${productosTotales}</p>`;
 }
 // Función para renderizar el nombre de la membresía adquirida para mostrarla en la sección superior con dataos del carro
 function renderizarMembresiaDOM(nombre) {    
@@ -233,7 +346,6 @@ function renderizarCantidadDeProductosDOM(cantidadProductos) {
     contenedorCantidadDeProductosDOM.innerHTML = `<p>${cantidadProductos}</p>`;   
 }
 
-
 // Función que mostrará e imprimirá los datos dee los productos añadidos al carro
 function mostrarCarritoDOM() {
     const carritoDOM = document.getElementById("carrito");
@@ -242,29 +354,45 @@ function mostrarCarritoDOM() {
     const productosAgrupados = agruparProductos(carrito);
     let cantidadProductos = 0; // Inicializar la cantidad de productos en el carrito
     // Mostrar cada grupo de productos agrupados
+
+     // Usar un Set para almacenar los IDs únicos de los productos
+     const idsUnicos = new Set();
     productosAgrupados.forEach(producto => {
-        
-        carritoDOM.innerHTML += `
-            <div class="contenedorProductosCarrito">
-            <hr>
-                <h3 class="h3ProductosCarrito">${producto.nombre}</h3>
-                ${producto.talle ? `<p class="textoH3PruductosCarrito">Talle: ${producto.talle}</p>` : ''}
-                    <button class="botonQuitarDelCarrito" data-id="${producto.id}" >
-                        -
-                    </button>
-                        <p class="textoH3PruductosCarrito">Cantidad: ${producto.cantidad} </p>   
-                    <button class="botonAumentarCantidad  text-center justify-content-center" data-id="${producto.id}" data-nombre="${producto.nombre}" data-precio="${producto.precio}" data-categoria="${producto.categoria}" data-talle="${producto.talle}">
-                        +
-                    </button>             
-                <p class="textoH3PruductosCarritoPrecio">Precio unitario: $${producto.precio}</p>
-                <p class="textoH3PruductosCarritoTotal">Total: $${(producto.precio * producto.cantidad)}</p>
-                  <hr>  
-            </div>
+         // Añadir el ID del producto al Set
+         idsUnicos.add(producto.id);
+            carritoDOM.innerHTML += `
+                <div class="contenedorProductosCarrito">
+
+                    <div clas="contenedorImgCarrito">
+                        <img class="carritoModalImg" src="${producto.imagen}" alt="logoCRT">
+                    </div>
+
+                    <div class="contenedorDatosProductoCarrito">
+                        <h3 class="h3ProductosCarrito">${producto.nombre}</h3>                
+                        
+                        ${producto.talle ? `<p class="textoH3PruductosCarrito">Talle: <strong>${producto.talle}</strong></p>` : ''}
+                            <div class="contenedorCantidadProdcutosCarrito">
+                                <button class="botonQuitarDelCarrito" data-id="${producto.id}" data-nombre="${producto.nombre}" data-precio="${producto.precio}" data-imagen="${producto.imagen}" data-categoria="${producto.categoria}" data-talle="${producto.talle}" >
+                                    -
+                                </button>
+                                    <p class="textoH3PruductosCarrito">Cantidad: <strong>${producto.cantidad}</strong> </p>   
+                                <button class="botonAumentarCantidad  text-center justify-content-center" data-id="${producto.id}" data-nombre="${producto.nombre}" data-precio="${producto.precio}" data-imagen="${producto.imagen}" data-categoria="${producto.categoria}" data-talle="${producto.talle}">
+                                    +
+                                </button>  
+                            </div>                      
+                        <p class="textoH3PruductosCarritoPrecio">Precio unitario: <strong>$${producto.precio}</strong></p>
+                        <p class="textoH3PruductosCarritoTotal">Total: <strong>$${(producto.precio * producto.cantidad)}</strong></p>
+                    </div>     
+                </div>
+                
+            `;
+            cantidadProductos += producto.cantidad; // Sumar la cantidad de productos de este grupo al total
             
-        `;
-        cantidadProductos += producto.cantidad; // Sumar la cantidad de productos de este grupo al total
-       
-    });
+        });
+    //Asigna el valor de la cantidad de productos distintos a la const
+    const cantidadProductosDistintos = idsUnicos.size;
+     //Muestra la cantidad de distintos productos en el DOM
+    document.getElementById('productosFinalDOM').innerText = `${cantidadProductosDistintos}`;
     
     // Mostrar la cantidad total de productos en el carrito
     renderizarCantidadDeProductosDOM(cantidadProductos);
@@ -272,20 +400,140 @@ function mostrarCarritoDOM() {
     let total = carrito.reduce((acc, producto) => acc + (producto.precio * producto.cantidad), 0);
     renderizarPrecioTotalDOM(total);
     renderizarPrecioTotalModal(total);
-    // Muestra la cantidad de productos del mismo tipo sumados al carrito
-    let productosTotales = carrito.length; //Utilizo el length del carrito para saber que cantidad de objetos distintos hay
-    renderizarProductosDOM(productosTotales);    
+    renderizarPrecioTotalModalPago(total);
+    
     if (carrito.length === 0) {
         const modalCarrito = document.getElementById('modalCarrito');
         modalCarrito.style.display = 'none'; // Cerrar el modal del carrito
 
-        // Mostrar el popover de carrito vacío
-        mostrarPopoverCarritoVacio();
+        // Mostrar el toast de carrito vacío
+        mostrarToastCarritoVacio();
     }  
-
     agregarEventoAumentarCantidad();
-    agregarEventoEliminarProducto();
+    agregarEventoEliminarProducto();  
+}
+
+function eventoAgregarAlCarrito(e) {
+    const id = e.currentTarget.getAttribute('data-id');
+    const nombre = e.currentTarget.getAttribute('data-nombre');
+    const precio = parseFloat(e.currentTarget.getAttribute('data-precio'));    
+    const categoria = e.currentTarget.getAttribute('data-categoria');
+    const imagen = e.currentTarget.getAttribute('data-imagen');
+    const descripcion = e.currentTarget.getAttribute('data-descripcion');
+
+    // Verificar si ya existe una membresía en el carrito
+    const existeMembresiaEnCarrito = carrito.some(producto => producto.categoria === 'membresia');
+
+    if (categoria === 'indumentaria') {
+        const radioTalles = document.querySelectorAll(`input[name="talles-${id}"]:checked`);
+
+        if (radioTalles.length === 0) {
+            mostrarToastElijeTalle();
+            return;
+        }
+        const talleSeleccionado = radioTalles[0].id.split('-')[0];
+
+        // Verificar si ya existe un producto con el mismo nombre, precio y talle en el carrito
+        const productoExistente = carrito.find(producto =>             
+            producto.nombre === nombre &&
+            producto.precio === precio &&
+            producto.categoria === categoria &&
+            producto.iamgen === imagen &&
+            producto.talle === talleSeleccionado
+        );
+
+        if (productoExistente) {
+            // Si el producto existe, incrementar la cantidad
+            productoExistente.cantidad++;
+        } else {
+            // Si no existe, agregar el producto al carrito
+            carrito.push({
+                id,
+                nombre,
+                precio,
+                cantidad: 1,
+                imagen,
+                categoria,
+                talle: talleSeleccionado
+            });
+        }
+    } else if (categoria === 'membresia' && existeMembresiaEnCarrito) {
+        mostrarToastMembresiaExistente();
+        return;
+    } else if (categoria === 'membresia') {
+        // Agregar la membresía al carrito
+        carrito.push({
+            id,
+            nombre,
+            precio,
+            imagen,
+            cantidad: 1,
+            categoria
+        });
+        
+        renderizarMembresiaDOM(nombre); // Actualizar el nombre de la membresía seleccionada en el DOM
+        localStorage.setItem('nombreMembresia', nombre); //Almacena en el dom el valor del nombre de la membresí añadida al carro
+        
+    } else if (categoria === 'articulos') {
+        carrito.push({
+            id,
+            nombre,
+            precio,
+            imagen,
+            cantidad: 1,
+            descripcion
+        });
+    }
+    
+    mostrarEstelaVerde();   
+    // Guardar carrito en localStorage y actualizar el carrito en el DOM
+    guardarCarritoEnLocalStorage();
+    mostrarCarritoDOM();
+    mostrarToastAñadir()   
+}
+
+// Función para manejar el evento de eliminar del carrito
+function eliminarProductoDelCarrito(e) {
+    const idProducto = e.currentTarget.getAttribute('data-id');
+    const nombre = e.target.getAttribute('data-nombre');
+    const talle = e.target.getAttribute('data-talle');
+    
+    const radioTalles = document.querySelectorAll(`input[name="talles-${idProducto}"]:checked`);
+    // Recupera el valor del talle seleccionado en el radio, en caso de existir, y sino asigna valor de null
+    const talleSeleccionado = radioTalles.length > 0 ? radioTalles[0].id.split('-')[0] : null;
+    // Encontrar el índice del producto en el carrito según su ID y su TALLE
+    const indice = carrito.findIndex(producto => producto.id === idProducto &&
+        (producto.talle === talleSeleccionado || (producto.talle === undefined && talleSeleccionado === null)));
   
+if (indice !== -1) {
+    // Si el producto existe, incrementar la cantidad
+    carrito[indice].cantidad--;
+        // Si la cantidad llega a 0, eliminar el producto del carrito
+        if (carrito[indice].cantidad === 0) {
+            // Eliminar el producto del carrito usando splice
+            carrito.splice(indice, 1);
+
+            // Guardar carrito actualizado en localStorage
+            guardarCarritoEnLocalStorage();
+            mostrarCarritoDOM();
+
+            // Mostrar el toast de eliminación
+            mostrarToastEliminar();
+            mostrarEstelaRoja();
+            
+             // Remueve el valor de la membresía
+            localStorage.removeItem('nombreMembresia');
+            renderizarMembresiaDOM(''); // Actualizar el nombre de la membresía seleccionada en el DOM            
+        }  
+        else {            
+            // Guardar carrito actualizado en localStorage
+            guardarCarritoEnLocalStorage();
+            mostrarCarritoDOM();
+        }
+    } else {
+        mostrarToastProdcutoInexistente();       
+    }
+
 }
 
 function agregarEventoAumentarCantidad() {
@@ -294,15 +542,11 @@ function agregarEventoAumentarCantidad() {
     Array.from(botonesAumentar).forEach(boton => {
         boton.addEventListener('click', function(e) {
             const idProducto = e.currentTarget.getAttribute('data-id');
-            const nombreProducto = e.currentTarget.getAttribute('data-nombre');
+            const talle = e.target.getAttribute('data-talle');  
 
-            // Encontrar el índice del producto en el carrito según su ID
-            const indice = carrito.findIndex(producto => producto.id === idProducto);
-
-
-            // Verificar si ya existe una membresía en el carrito
-    const existeMembresiaEnCarrito = carrito.some(producto => producto.categoria === 'membresia');
-    
+            // Encontrar el índice del producto en el carrito según su ID y su TALLE
+            const indice = carrito.findIndex(producto => producto.id === idProducto &&
+                (producto.talle === talle || (producto.talle === undefined )));
 
     if (indice !== -1) {
         const producto = carrito[indice];
@@ -311,7 +555,7 @@ function agregarEventoAumentarCantidad() {
         if (producto.categoria === 'membresia') {
             // Si es membresía y ya tiene una cantidad de 1, no se puede aumentar más
             if (producto.cantidad >= 1) {
-                alert('Solo se permite una membresía por cliente.');
+                mostrarToastMembresiaExistente();
                 return; // Salir de la función sin hacer cambios
             }
         }
@@ -322,10 +566,10 @@ function agregarEventoAumentarCantidad() {
         // Guardar carrito actualizado en localStorage y actualizar el carrito en el DOM
         guardarCarritoEnLocalStorage();
         mostrarCarritoDOM();
-            }
-           
+        mostrarToastAñadir();
+            }           
              else {                
-                console.error('Producto no encontrado en el carrito');
+                mostrarToastProdcutoInexistente();
             }
         });
     });
@@ -336,25 +580,37 @@ function agregarEventoEliminarProducto() {
     botonesEliminar.forEach(boton => {
         boton.addEventListener('click', function(e) {
             const idProducto = e.currentTarget.getAttribute('data-id');
-
-            // Encontrar el índice del producto en el carrito según su ID
-            const indice = carrito.findIndex(producto => producto.id === idProducto);
-
+            const talle = e.target.getAttribute('data-talle');         
+           
+            // Encontrar el índice del producto en el carrito según su ID y su TALLE
+            const indice = carrito.findIndex(producto => producto.id === idProducto &&
+                (producto.talle === talle || (producto.talle === undefined )));
+        
             if (indice !== -1) {
                 // Disminuir la cantidad del producto en 1
                 carrito[indice].cantidad--;
 
                 // Si la cantidad llega a 0, eliminar el producto del carrito
                 if (carrito[indice].cantidad === 0) {
+
+                    // Si existe una memebresía, y se borra, actualiza el valor de membresía del DOM
+                    if (carrito[indice].categoria === 'membresia') {
+                        // Eliminar el nombre de la membresía del localStorage
+                        localStorage.removeItem('nombreMembresia');
+                        // Actualizar el nombre de la membresía en el DOM
+                        renderizarMembresiaDOM('');
+                    }
                     // Eliminar el producto del carrito usando splice
-                    carrito.splice(indice, 1);
+                    carrito.splice(indice, 1);                        
                 }
 
                 // Guardar carrito actualizado en localStorage
                 guardarCarritoEnLocalStorage();
                 mostrarCarritoDOM();
+                mostrarToastEliminar();
+
             } else {
-                console.error('No se encontró el producto en el carrito.');
+                mostrarToastProdcutoInexistente();
             }
         });
     });
@@ -369,6 +625,7 @@ function agruparProductos(carrito) {
         const encontrado = productosAgrupados.find(p => 
             p.id === producto.id &&  // Buscar por ID
             p.nombre === producto.nombre && 
+            p.imagen === producto.imagen &&
             p.precio === producto.precio && 
             p.talle === producto.talle &&
             p.categoria === producto.categoria
@@ -380,26 +637,25 @@ function agruparProductos(carrito) {
             productosAgrupados.push({
                 id: producto.id,
                 nombre: producto.nombre,
+                imagen: producto.imagen,
                 precio: producto.precio,
                 categoria: producto.categoria,
                 cantidad: producto.cantidad,
                 talle: producto.talle
-            });
+            });            
         }
     });
    
     return productosAgrupados;
 }
 
-// Función para agregar evento al botón "UNITE"
+// Función para agregar eventos a los botones
 function agregarEvento(evento, clase, eventoString) {
     const nodos = document.getElementsByClassName(clase);
     Array.from(nodos).forEach(el => { // Convertir los nodos encontrados en un array para usar métodos
         el.addEventListener(eventoString, evento);
     });
 }
-
-
 
 // Función para inicializar el carrito desde localStorage al cargar la página
 function inicializarCarritoDesdeLocalStorage() {
@@ -412,209 +668,58 @@ function inicializarCarritoDesdeLocalStorage() {
 
 // Función para guardar el carrito en localStorage
 function guardarCarritoEnLocalStorage() {
-    localStorage.setItem('carrito', JSON.stringify(carrito));   
-}
-
-// Inicialización de eventos al cargar la página
-window.addEventListener('DOMContentLoaded', () => {
-    renderizarProductosMembresias();
-    renderizarProductosIndumentaria();
-    renderizarProductosArticulos();
-    inicializarCarritoDesdeLocalStorage();
-    agregarEventoAumentarCantidad();
-    agregarEvento(eventoAgregarAlCarrito, 'botonComprar', 'click');    
-    agregarEvento(eliminarProductoDelCarrito, 'botonQuitarId', 'click');
-
-
-    agregarEvento(eventoAgregarAlCarrito, 'botonComprarModal', 'click');  
-   
-    
-    
-
-    const nombreMembresiaGuardada = localStorage.getItem('nombreMembresia');
-    renderizarMembresiaDOM(nombreMembresiaGuardada);
-    
-});
-
-
-function eventoAgregarAlCarrito(e) {
-    const id = e.currentTarget.getAttribute('data-id');
-    const nombre = e.currentTarget.getAttribute('data-nombre');
-    const precio = parseFloat(e.currentTarget.getAttribute('data-precio'));
-    const categoria = e.currentTarget.getAttribute('data-categoria');
-    const descripcion = e.currentTarget.getAttribute('data-descripcion');
-
-    // Verificar si ya existe una membresía en el carrito
-    const existeMembresiaEnCarrito = carrito.some(producto => producto.categoria === 'membresia');
-
-    if (categoria === 'indumentaria') {
-        const radioTalles = document.querySelectorAll(`input[name="talles-${id}"]:checked`);
-
-        if (radioTalles.length === 0) {
-            alert(`Debes seleccionar el talle`);
-            return;
-        }
-        const talleSeleccionado = radioTalles[0].id.split('-')[0];
-
-        // Verificar si ya existe un producto con el mismo nombre, precio y talle en el carrito
-        const productoExistente = carrito.find(producto =>             
-            producto.nombre === nombre &&
-            producto.precio === precio &&
-            producto.categoria === categoria &&
-            producto.talle === talleSeleccionado
-        );
-
-        if (productoExistente) {
-            // Si el producto existe, incrementar la cantidad
-            productoExistente.cantidad++;
-        } else {
-            // Si no existe, agregar el producto al carrito
-            carrito.push({
-                id,
-                nombre,
-                precio,
-                cantidad: 1,
-                categoria,
-                talle: talleSeleccionado
-            });
-        }
-    } else if (categoria === 'membresia' && existeMembresiaEnCarrito) {
-        alert('Ya tienes una membresía en el carrito. Elimina la membresía actual para agregar otra.');
-        return;
-    } else if (categoria === 'membresia') {
-        // Agregar la membresía al carrito
-        carrito.push({
-            id,
-            nombre,
-            precio,
-            cantidad: 1,
-            categoria
-        });
+     try {
         
-        renderizarMembresiaDOM(nombre); // Actualizar el nombre de la membresía seleccionada en el DOM
-
-        localStorage.setItem('nombreMembresia', nombre); //Almacena en el dom el valor del nombre de la membresí añadida al carro
-        
-    } else if (categoria === 'articulos') {
-        carrito.push({
-            id,
-            nombre,
-            precio,
-            cantidad: 1,
-            descripcion
-        });
-    }
-    
-    // Guardar carrito en localStorage y actualizar el carrito en el DOM
-    guardarCarritoEnLocalStorage();
-    mostrarCarritoDOM();
-    mostrarPopoverAñadir()    
-    
+        localStorage.setItem('carrito', JSON.stringify(carrito));
+    } catch (error) {        
+        mostrarToastErrorCargarLS();
+    }  
 }
 
-// Función para manejar el evento de eliminar del carrito
-function eliminarProductoDelCarrito(e) {
-    const idProducto = e.currentTarget.getAttribute('data-id');
-    const nombre = e.target.getAttribute('data-nombre');
-
-    // Encontrar el índice del producto en el carrito según su ID
-    const indice = carrito.findIndex(producto => producto.id === idProducto);
-    
-    if (indice !== -1) {
-        // Disminuir la cantidad del producto en 1
-        carrito[indice].cantidad--;
-
-        // Si la cantidad llega a 0, eliminar el producto del carrito
-        if (carrito[indice].cantidad === 0) {
-            // Eliminar el producto del carrito usando splice
-            carrito.splice(indice, 1);
-
-            // Guardar carrito actualizado en localStorage
-            guardarCarritoEnLocalStorage();
-            mostrarCarritoDOM();
-
-            // Mostrar el popover de eliminación
-            mostrarPopover();
-
-            renderizarMembresiaDOM(nombre); // Actualizar el nombre de la membresía seleccionada en el DOM
-            localStorage.setItem('nombreMembresia', nombre); 
-        } 
-        else {
-            
-            // Guardar carrito actualizado en localStorage
-            guardarCarritoEnLocalStorage();
-            mostrarCarritoDOM();
-        }
-    } else {
-
-        alert('No se encontró el producto en el carrito.');
-        console.error('No se encontró el producto en el carrito.');
-    }
-
-}
-
-function mostrarPopover() {
-    const popover = document.getElementById('popoverEliminarProducto');
-    popover.style.display = 'block';
-
-    // Ocultar el popover después de 1 segundos
-    setTimeout(() => {
-        popover.style.display = 'none';
-    }, 1300); //  1.3 segundos
-}
-function mostrarPopoverAñadir() {
-    const popover = document.getElementById('popoverAñadirProducto');
-    popover.style.display = 'block';
-
-    // Ocultar el popover después de 1.3 segundos
-    setTimeout(() => {
-        popover.style.display = 'none';
-    }, 1300); // 1.3 segundos
-}
-
-
-// JavaScript para abrir y cerrar el modal
-document.addEventListener('DOMContentLoaded', function() {
+//---------------------------------- MODAL CARRITO ---------------------------------------------
+//Para abrir y cerrar el modal, eventos de los botones del carrito
     const abrirCarrito = document.getElementById('abrirCarritoTOP');
     const iconoCarrito = document.getElementById('iconoCarrito');
-    const modalCarrito = document.getElementById('modalCarrito');
+    const modalCarrito = document.getElementById('modalCarrito');    
     const botonCerrarModal = document.getElementById('botonCerrarModal');
-  
-    
+    //Valores del modal de formulario de pago
+    const confirmarCarrito = document.getElementById('confirmarCarrito');
+    const botonCerrarPagoModal = document.getElementById('botonCerrarPagoModal');
+    const modalPagoCarrito = document.getElementById('modalPagoCarrito');    
+
+     // Cerrar modal  del fomrulario de pago al hacer clic en el botón "Cerrar"
+     confirmarCarrito.addEventListener('click', function() {
+        modalPagoCarrito.style.display = 'block';
+    });
+
     // Abrir modal al hacer clic en el boton de CARRITO de arriba
     abrirCarrito.addEventListener('click', function() {
         if (carrito.length <= 0){
-             //Condicional para que frene el proceso si el carrito está vacío
-        if (carrito.length <= 0){
-            popoverCarritoVacio.style.display = 'block';
-             mostrarPopoverCarritoVacio();
-              return
-        };
-            return
-        }
-        
+             //Condicional para que frene el proceso si el carrito está vacío                 
+             mostrarToastCarritoVacio();
+              return      
+        }        
         modalCarrito.style.display = 'block';
     });
 
     // Abrir modal al hacer clic en el icono de carrito
     iconoCarrito.addEventListener('click', function() {
         if (carrito.length <= 0){
-             //Condicional para que frene el proceso si el carrito está vacío
-        if (carrito.length <= 0){
-            popoverCarritoVacio.style.display = 'block';
-             mostrarPopoverCarritoVacio();
-              return
-        };
-            return
-        }
+             //Condicional para que frene el proceso si el carrito está vacío                 
+             mostrarToastCarritoVacio();
+              return       
+        }        
         modalCarrito.style.display = 'block';
-
     });
 
     // Cerrar modal al hacer clic en el botón "Cerrar"
     botonCerrarModal.addEventListener('click', function() {
-        modalCarrito.style.display = 'none';
+        modalCarrito.style.display = 'none';        
     });
+    // Cerrar modal de pago del formulario de pago al hacer clic en el botón "Cerrar"
+    botonCerrarPagoModal.addEventListener('click', function() {
+        modalPagoCarrito.style.display = 'none';
+           });
 
     // Cerrar modal si el usuario hace clic fuera del contenido del modal
     window.addEventListener('click', function(event) {
@@ -623,70 +728,30 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    
+    //Botón de vaciar carrito del menú superior
     const vaciarCarritoBtnTOP = document.getElementById('vaciarCarritoTOP');
+    //Botón de vaciar carrito del modal del carrito
     const vaciarCarritoBtn = document.getElementById('vaciarCarrito');
-    const confirmarVaciarCarritoBtn = document.getElementById('confirmarVaciarCarritoBtn');
-    const cancelarVaciarCarritoBtn = document.getElementById('cancelarVaciarCarritoBtn');
-    const popoverVaciarCarrito = document.getElementById('popoverVaciarCarrito');
-    const popoverCarritoVaciado = document.getElementById('popoverCarritoVaciado');
-    const popoverCarritoVacio = document.getElementById('popoverCarritoVacio');
-    
-    const carritoContenedor = document.getElementById('carrito');
 
- 
+    //Eventos de los botones de vaciar carrito ------------------------------
     vaciarCarritoBtnTOP.addEventListener('click', function() {
         //Condicional para que frene el proceso si el carrito está vacío
-        if (carrito.length <= 0){
-            popoverCarritoVacio.style.display = 'block';
-             mostrarPopoverCarritoVacio();
+        if (carrito.length <= 0){            
+             mostrarToastCarritoVacio();
               return
         }
-        //Si hay productos, muestra los pop overs
-        popoverVaciarCarrito.style.display = 'block';
+        //Sweet alert para vaciar el carrito
+        swalVaciarCarrito()
     });
    
     vaciarCarritoBtn.addEventListener('click', function() {
-        
-        popoverVaciarCarrito.style.display = 'block';
+        //Sweet alert para vaciar el carrito
+        swalVaciarCarrito()
     });
 
-    cancelarVaciarCarritoBtn.addEventListener('click', function() {
-        popoverVaciarCarrito.style.display = 'none';
-    });
-
-    confirmarVaciarCarritoBtn.addEventListener('click', function() {
-        vaciarCarrito();
-        popoverVaciarCarrito.style.display = 'none';
-        modalCarrito.style.display = 'none';
-        mostrarPopoverCarritoVaciado();
-    });
-
-      
-    const pagarCarritoBtn = document.getElementById('pagarCarrito');
-    const confirmarPagoCarritoBtn = document.getElementById('confirmarPagoCarritoBtn');
-    const cancelarPagoCarritoBtn = document.getElementById('cancelarPagoCarritoBtn');
-    const popoverPagarCarrito = document.getElementById('popoverPagarCarrito');
-    const popoverCarritoComprado = document.getElementById('popoverCarritoComprado');
-
+//---------------------------------- FIN MODAL CARRITO ---------------------------------------------
    
-    pagarCarritoBtn.addEventListener('click', function() {
-        popoverPagarCarrito.style.display = 'block';
-    });
-
-    cancelarPagoCarritoBtn.addEventListener('click', function() {
-        popoverPagarCarrito.style.display = 'none';
-    });
-
-    confirmarPagoCarritoBtn.addEventListener('click', function() {
-        pagarCarrito();
-        popoverPagarCarrito.style.display = 'none';
-        modalCarrito.style.display = 'none';
-        mostrarPopoverCompra();
-    });
-
-   
-        
+// ----------------------- FUNCIONES PARA PAGAR Y VACIAR CARRITO ----------------------------------
 
     function vaciarCarrito() {
         // Vaciar el contenedor del carrito eliminando todos sus hijos
@@ -694,6 +759,7 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.clear();            
             carrito = []           
             const nombreMembresiaGuardada = localStorage.getItem('nombreMembresia');
+            mostrarEstelaRoja();
             renderizarMembresiaDOM(nombreMembresiaGuardada);
             mostrarCarritoDOM();  //Para que se actualicen los datos de DOM     
     }
@@ -704,24 +770,280 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.clear();            
             carrito = []           
             const nombreMembresiaGuardada = localStorage.getItem('nombreMembresia');
+            mostrarEstelaVerde();
             renderizarMembresiaDOM(nombreMembresiaGuardada);
             mostrarCarritoDOM();  //Para que se actualicen los datos de DOM     
     }
 
-    function mostrarPopoverCarritoVaciado() {
-        popoverCarritoVaciado.style.display = 'block';
-        setTimeout(function() {
-            popoverCarritoVaciado.style.display = 'none';
-        }, 1300); // Ocultar después de 2 segundos
+//-------------------------------------- TOAST --------------------------------------------------
+
+    function mostrarToastCarritoVaciado() {
+       //Muestra Toast de "Carrito vaciado"
+       Toastify({
+        text: "Se ha vaciado el carrito",    
+        close: true,
+        position: "left",
+        stopOnFocus: true,
+        gravity: "bottom",
+        newWindow: true,
+        duration: 2000,      
+        style: {
+            background: "linear-gradient(to right,#e65b5b, #ec8b8b)",
+        },
+        })    
+            .showToast();       
+    }  
+
+function mostrarToastCarritoVacio() {
+    //Muestra Toast de "carrito vacío"
+    Toastify({
+        text: "No hay productos en el carrito",    
+        close: true,
+        position: "left",
+        stopOnFocus: true,
+        gravity: "bottom",
+        newWindow: true,
+        duration: 1500,      
+        style: {
+            background: "linear-gradient(to right, #e6ba5b, #ffd884)",
+        },
+        })    
+            .showToast();
+}
+
+function mostrarToastAñadir() {
+     // Muestra Toast de "producto agregado"
+     Toastify({
+        text: "Producto Agregado",    
+        close: true,
+        position: "left",
+        stopOnFocus: true,
+        gravity: "bottom",
+        newWindow: true,
+        duration: 900,      
+        style: {
+            background: "linear-gradient(to right, #60e65b, #8af786)",
+          },
+        })    
+            .showToast();
+}
+
+function mostrarToastEliminar() {
+    // Muestra Toast de "producto eliminado"
+    Toastify({
+        text: "Producto Eliminado",    
+        close: true,
+        position: "left",
+        stopOnFocus: true,
+        gravity: "bottom",
+        newWindow: true,
+        duration: 900,      
+        style: {
+            background: "linear-gradient(to right, #e65b5b, #ec8b8b)",
+        },
+        })    
+            .showToast();
+}
+
+function mostrarToastProdcutoInexistente() {
+     // Muestra Toast de "producto inexistente"
+     Toastify({
+        text: "No existe el producto en el carrito",    
+        close: true,
+        position: "left",
+        stopOnFocus: true,
+        gravity: "bottom",
+        newWindow: true,
+        duration: 1500,      
+        style: {
+            background: "linear-gradient(to right, #e6ba5b, #ffd884)",
+        },
+        })    
+            .showToast();
+}
+
+function mostrarToastMembresiaExistente() {
+     // Muestra Toast de "membresia existente"
+     Toastify({
+        text: "Ya tienes una membresía en el carrito, elimina la actual para agregar otra.",    
+        close: true,
+        position: "left",
+        stopOnFocus: true,
+        gravity: "bottom",
+        newWindow: true,
+        duration: 1500,      
+        style: {            
+            background: "linear-gradient(to right, #e6ba5b, #ffd884)",
+        },
+        })    
+            .showToast();
+}
+
+function mostrarToastElijeTalle() {
+    Toastify({
+        text: "Debes seleccionar el talle",    
+        close: true,
+        position: "left",
+        stopOnFocus: true,
+        gravity: "bottom",
+        newWindow: true,
+        duration: 1500,      
+        style: {            
+            background: "linear-gradient(to right, #e6ba5b, #ffd884)",
+        },
+        })    
+            .showToast();
+}
+
+function mostrarToastCompraConcretada() {
+    Toastify({
+        text: "Que lo disfrutes! :)",    
+        close: true,
+        position: "left",
+        stopOnFocus: true,
+        gravity: "bottom",
+        newWindow: true,
+        duration: 1500,      
+        style: {            
+            background: "linear-gradient(to right, #00b09b, #96c93d)",
+        }, 
+        
+        })    
+            .showToast();
+}
+function mostrarToastErrorCarga() {
+    Toastify({
+        text: "Error en la carga de los datos.",    
+        close: true,
+        position: "left",
+        stopOnFocus: true,
+        gravity: "bottom",
+        newWindow: true,
+        duration: 1500,      
+        style: {            
+            background: "linear-gradient(to right, #e65b5b, #ec8b8b)",
+        }, 
+        
+        })    
+            .showToast();
+}
+
+function mostrarToastErrorCargarLS() {
+    Toastify({
+        text: "Error al guardar los datos del carrito.",    
+        close: true,
+        position: "left",
+        stopOnFocus: true,
+        gravity: "bottom",
+        newWindow: true,
+        duration: 1500,      
+        style: {            
+            background: "linear-gradient(to right, #e65b5b, #ec8b8b)",
+        }, 
+        
+        })    
+            .showToast();
+}
+
+//------------------------------ SWEET ALERTS -------------------------------------------------
+     //Sweet alert para vaciar el carrito
+     function swalVaciarCarrito(){
+        Swal.fire({
+            title: "ATENCIÓN!",
+            text: "¿Deseas vaciar el carrito?",
+            icon: "warning",
+            showCancelButton: true,
+            background: "#fff5ee",            
+            color: "#e97100",
+            confirmButtonColor: "#e97100",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Confirmar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                vaciarCarrito(),
+                mostrarToastCarritoVaciado(),
+            Swal.fire({      
+                text: "El carrito ha sido vaciado.",
+                color: "#e97100",
+                confirmButtonColor: "#e97100",                
+                icon: "success"
+            });
+            }
+        });
     }
 
-   
-    
-});
+    //Sweet alert para vaciar el carrito
+    function swalPagarCarrito(){
+        // Obtener el método de pago seleccionado
+        const metodoPagoSeleccionado = document.querySelector('input[name="pago"]:checked').value;
 
-function mostrarPopoverCarritoVacio() {
-    popoverCarritoVacio.style.display = 'block';
-    setTimeout(function() {
-        popoverCarritoVacio.style.display = 'none';
-    }, 1300); // Ocultar después de 2 segundos
-}
+        // Mapeo de los valores del radio a textos más amigables
+        const textoMetodoPago = {
+            efectivo: 'Efectivo',
+            transferencia: 'Transferencia',
+            tarjeta: 'Tarjeta'
+        }[metodoPagoSeleccionado];
+       
+        Swal.fire({
+            title: "ATENCIÓN!",
+            text:  `El pago se realizará en ${textoMetodoPago}. ¿Deseas confirmar la transacción?`,
+            icon: "warning",
+            showCancelButton: true,    
+            color: "#e97100",
+            confirmButtonColor: "#e97100",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Pagar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Obtener los valores del formulario
+                const nombre = document.getElementById('nombre').value;
+                const direccion = document.getElementById('direccion').value;
+            
+                    pagarCarrito(),
+                    mostrarToastCompraConcretada(),
+                    
+                        //Oculta el modal del formulario de pago
+                        modalPagoCarrito.style.display = 'none';
+                        //Reinicia los valores del form
+                        pagoForm.reset();
+            Swal.fire({      
+                text: `${nombre}, muchas gracias por tu compra! Se enviarán los productos a ${direccion}.`,
+                color: "#e97100",
+                confirmButtonColor: "#e97100",
+                icon: "success",                
+            });
+            }
+        });
+      
+    }
+
+    
+//---------------------------------- ESTELAS CARRITO--------------------------------------
+ 
+function mostrarEstelaVerde() {
+    // Obtener el elemento del carrito por su ID
+    const iconoCarrito = document.getElementById('iconoCarrito');
+    
+    // Añadir la clase 'estela-verde' al elemento
+    iconoCarrito.classList.add('estela-verde');
+  
+    // Eliminar la clase después de 300 milisegundos (la duración de la animación)
+    setTimeout(() => {
+      iconoCarrito.classList.remove('estela-verde');
+    }, 300); // Asegúrate de que esta duración coincida con la duración de la animación en CSS
+  }
+
+  function mostrarEstelaRoja() {
+    // Obtener el elemento del carrito por su ID
+    const iconoCarrito = document.getElementById('iconoCarrito');
+    
+    // Añadir la clase 'estela-verde' al elemento
+    iconoCarrito.classList.add('estela-roja');
+  
+    // Eliminar la clase después de 300 milisegundos (la duración de la animación)
+    setTimeout(() => {
+      iconoCarrito.classList.remove('estela-roja');
+    }, 300); // Asegúrate de que esta duración coincida con la duración de la animación en CSS
+  }
+ //---------------------------------- FINAL ESTELAS------------------------------- ---------------------
+

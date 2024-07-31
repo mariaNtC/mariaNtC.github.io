@@ -12,8 +12,8 @@ header {
             box-shadow: $shadowSoft;      
             
             .indexLogoLink{
-                width: 150px;/* Corrección de espaciado entre menú hambruguesa y logo*/ 
-                @include myp(0 0 0 50px, 5px);/* Mixin- Margin y Padding */                               
+                width: 112px;/* Corrección de espaciado entre menú hambruguesa y logo*/ 
+                @include myp(0 0 0 30px, 5px);/* Mixin- Margin y Padding */                               
                 img {
                     /* Propiedades de la img del logo*/ 
                     width: 8%;    
@@ -22,7 +22,7 @@ header {
             }
             button {
                 /* Propiedades del menú Hamburguesa*/
-                margin: 10px 25px; 
+                margin: 10px 25px 10px 0px; 
                 color: $colorH ;
                 border: 2px solid rgb(255, 228, 196, 0.5);
                 span {
