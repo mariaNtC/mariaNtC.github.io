@@ -12,6 +12,9 @@ class ProductoMembresia {
     
     // Método para renderizar el HTML de un producto de la sección Membresía
     renderizar() {
+        //Formato para los valores numéricos para que se aplique el "." decimal
+        const precioProductoFormateado =  formateoDeNumeros(this.precio);
+
         return `
         <div class="idTiendaContainer justify-content-center">
           <div class="producto ${this.categoria} idItemContainer">
@@ -26,7 +29,7 @@ class ProductoMembresia {
                     <p class="idItemImgTextDesc">DURACIÓN: ${this.duracion}</p>
                 </div>
                 <div class="idItemImgPrecio text-center">
-                    <p>$${this.precio}</p>
+                    <p>$${precioProductoFormateado}</p>
                 </div>
                 <div class="contenedorBotonesTienda">
                     <button class="botonComprar text-center justify-content-center" data-id="${this.id}" data-nombre="${this.nombre}" data-precio="${this.precio}" data-imagen="${this.imagen}" data-categoria="${this.categoria}">
@@ -57,6 +60,8 @@ class ProductoIndumentaria {
     }
 
     renderizarIndumentaria() { // Método para renderizar el HTML de un producto de la sección Indumentaria
+        //Formato para los valores numéricos para que se aplique el "." decimal
+        const precioProductoFormateado =  formateoDeNumeros(this.precio);
         return ` <div class="indumentariaTiendaContainer ">
                     <div class="indumentariaItemContainer producto ${this.categoria}">
                         <div class="indumentariaItemImgContainer">
@@ -87,7 +92,7 @@ class ProductoIndumentaria {
                     </form>
 
                     <div class="indumentariaItemImgPrecio text-center">
-                        <p>$${this.precio}</p>
+                        <p>$${precioProductoFormateado}</p>
                     </div>
                     
                     </div>   
@@ -118,6 +123,9 @@ class ProductoArticulos {
     }
 
     renderizarArticulos() { // Método para renderizar el HTML de un producto de la sección Articulos
+         //Formato para los valores numéricos para que se aplique el "." decimal
+         const precioProductoFormateado =  formateoDeNumeros(this.precio);
+
         return `
         <div class="articuloTiendaContainer">
             <div class="articuloItemContainer producto ${this.categoria}">
@@ -136,7 +144,7 @@ class ProductoArticulos {
                     </div>
                     
                     <div class="articuloItemImgPrecio text-center">
-                        <p>$${this.precio}</p>
+                        <p>$${precioProductoFormateado}</p>
                     </div>
 
                  </div>   
@@ -164,24 +172,17 @@ const contenedorProductosArticulos = document.getElementById('productosArticulos
 
 document.addEventListener('DOMContentLoaded', () => {
 
-     // Mostrar el spinner
-     const spinner = document.getElementById('spinner');
-     const contenido = document.getElementById('contenido');
- 
-     spinner.style.display = 'block'; // Mostrar spinner
- 
-     // Ocultar el spinner cuando la página esté completamente cargada
-     window.addEventListener('load', function() {
-
-        
-
-            spinner.style.display = 'none'; // Ocultar spinner
-            contenido.style.display = 'block'; // Mostrar contenido    
-        
-        
-        
-             
-     });
+    spinner.style.display = 'block'; // Mostrar spinner
+    window.addEventListener('load', function() {
+        // Esperar 2 segundos antes de ocultar el spinner y mostrar el contenido
+        setTimeout(function() {
+            const spinner = document.getElementById('spinner');
+            const contenido = document.getElementById('contenido');
+    
+            spinner.style.display = 'none';
+            contenido.style.display = 'block';
+        }, 1500); // 2000 milisegundos = 2 segundos
+    });    
 
     fetch('/js/productos.json')
         .then(response => {
@@ -316,20 +317,28 @@ const productosArticulos = [];
 let carrito = [];
 let duracionMembresia = "";
 
+//Función para dar formato a los valores numéricos con los "." decimales
+function formateoDeNumeros (num) {
+    const valorNumericoFormateado = num.toLocaleString('es-ES');     
+    return valorNumericoFormateado;
+}
 // Función para renderizar el costo total del carrito
-function renderizarPrecioTotalDOM(productosTotales) {    
+function renderizarPrecioTotalDOM(productosTotales) {      
+    const productosTotalesFormateado = formateoDeNumeros (productosTotales);
     const contenedorPrecioTotalDOM = document.getElementById(`costoFinalDOM`);
-    contenedorPrecioTotalDOM.innerHTML = `<p>$${productosTotales}</p>`;       
+    contenedorPrecioTotalDOM.innerHTML = `<p>$${productosTotalesFormateado}</p>`;  
 }
 // Función para renderizar el costo total del carrito en el modal
-function renderizarPrecioTotalModal(productosTotales) {    
+function renderizarPrecioTotalModal(productosTotales) {  
+    const productosTotalesFormateado = formateoDeNumeros (productosTotales);  
     const contenedorPrecioTotalModal = document.getElementById(`costoFinalModal`);
-    contenedorPrecioTotalModal.innerHTML = `<p>$${productosTotales}</p>`;
+    contenedorPrecioTotalModal.innerHTML = `<p>$${productosTotalesFormateado}</p>`;
 }
 // Función para renderizar el costo total del carrito en el modal del pago
-function renderizarPrecioTotalModalPago(productosTotales) {    
+function renderizarPrecioTotalModalPago(productosTotales) { 
+    const productosTotalesFormateado = formateoDeNumeros (productosTotales);   
     const contenedorPrecioTotalModalPago = document.getElementById(`costoFinalModalPago`);
-    contenedorPrecioTotalModalPago.innerHTML = `<p>$${productosTotales}</p>`;
+    contenedorPrecioTotalModalPago.innerHTML = `<p>$${productosTotalesFormateado}</p>`;
 }
 // Función para renderizar el nombre de la membresía adquirida para mostrarla en la sección superior con dataos del carro
 function renderizarMembresiaDOM(nombre) {    
@@ -358,6 +367,10 @@ function mostrarCarritoDOM() {
      // Usar un Set para almacenar los IDs únicos de los productos
      const idsUnicos = new Set();
     productosAgrupados.forEach(producto => {
+        //Formato para los valores numéricos para que se aplique el "." decimal
+        const precioFormateado =  formateoDeNumeros(producto.precio);
+        const precioTotalProducto = producto.precio * producto.cantidad;
+        const precioTotalProductoFormateado = formateoDeNumeros(precioTotalProducto);
          // Añadir el ID del producto al Set
          idsUnicos.add(producto.id);
             carritoDOM.innerHTML += `
@@ -380,8 +393,8 @@ function mostrarCarritoDOM() {
                                     +
                                 </button>  
                             </div>                      
-                        <p class="textoH3PruductosCarritoPrecio">Precio unitario: <strong>$${producto.precio}</strong></p>
-                        <p class="textoH3PruductosCarritoTotal">Total: <strong>$${(producto.precio * producto.cantidad)}</strong></p>
+                        <p class="textoH3PruductosCarritoPrecio">Precio unitario: <strong>$${precioFormateado}</strong></p>
+                        <p class="textoH3PruductosCarritoTotal">Total: <strong>$${(precioTotalProductoFormateado)}</strong></p>
                     </div>     
                 </div>
                 
@@ -1007,7 +1020,7 @@ function mostrarToastErrorCargarLS() {
                         //Reinicia los valores del form
                         pagoForm.reset();
             Swal.fire({      
-                text: `${nombre}, muchas gracias por tu compra! Se enviarán los productos a ${direccion}.`,
+                text: `¡${nombre}, muchas gracias por tu compra! Cuando se reciba el pago se enviarán los productos a ${direccion}.`,
                 color: "#e97100",
                 confirmButtonColor: "#e97100",
                 icon: "success",                
